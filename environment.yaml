@@ -21,4 +21,5 @@ dependencies:
   - psutil
   - ete3
   - scipy
+  - hyphy
   - pip
