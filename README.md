@@ -1,51 +1,186 @@
-# Gene2Struct
+# PhyloSelect
 
-**Gene2Struct** is an advanced bioinformatics toolkit specifically designed for the investigation of **functional genes in non-model organisms**.  
-It provides an integrated workflow that bridges genomic data mining, evolutionary inference, and structural–functional characterization, encompassing:  
+An Integrated Toolkit for Functional Gene Mining, Evolutionary Analysis, and Structural Characterization.
 
-- **Accurate recovery of coding sequences (CDS)** from shallow sequencing data to enable robust **phylogenetic reconstruction**  
-- **Comprehensive evolutionary analyses**, including **conservation profiling** and **positive selection detection** at both the **site** and **branch** levels  
-- **Protein structure prediction** coupled with large-scale **molecular docking simulations**  
+## Introduction
 
-By uniting methodologies from **phylogenomics**, **structural biology**, and **functional genomics**, Gene2Struct establishes a versatile platform for elucidating the molecular mechanisms of gene function in diverse non-model lineages.  
+PhyloSelect is a command-line bioinformatics toolkit for functional gene studies in non-model organisms. Its main functionalities include:
 
+- Extracting target CDS sequences from genomic or transcriptomic data.  
+- Performing site-level and branch-level evolutionary analyses to detect positive selection and sequence heterogeneity.  
+- Conducting selection–environment association analyses.  
+- Running molecular docking to evaluate structural-functional effects of sequence variants.  
 
+Users can complete a full workflow from sequence extraction to evolutionary and structural-functional interpretation using PhyloSelect.
 
-## Installation
+![PhyloSelect workflow](pipeline.png)
 
-### 1. Clone the repository
-
-To begin, clone the repository from its GitHub source and navigate into the project directory.
-
-```bash
-git clone https://github.com/scu-shiyi/Gene2Struct.git
-cd Gene2Struct
-```
-
-### 2. Install MGLTools (Optional)
-
-We recommend that users manually download the MGLTools package and place it under the utils/ directory:
-- Download  [MGLTools](https://ccsb.scripps.edu/mgltools/downloads/) .
-- Place the extracted folder under the `Gene2Struct/gene2struct/utils/` directory.
-
-### 3. Configure the environment
-
-Set up the Conda environment using the provided YAML file to ensure all required dependencies are installed.
-
-```bash
-conda env create -f environment.yaml
-conda activate gene2struct
-pip install .
-```
+For the **complete user manual**, please refer to [user manual](manual.md)
 
 ---
 
-## Usage
+## Module Overview
 
-Coming soon... (examples of phylogenetic analysis, conservation test, structure prediction, and docking will be provided)
+The table below provides a brief overview of the input file types required for each module. For detailed file formats, parameter descriptions, and complete usage instructions, please refer to the [PhyloSelect User Manual](manual.md).
+
+| Module    | Input Type                                   | Description                                  |
+| --------- | -------------------------------------------- | -------------------------------------------- |
+| GeneMiner | Reads or contigs                             | Raw sequencing data or assembled sequences   |
+| SiteView  | Single CDS file, optional phylogenetic tree  | Site-level evolutionary analysis for a gene  |
+| Selection | Multiple CDS files, optional tree mapping    | Multi-gene or batch selection analysis       |
+| EnvAssoc  | Codon alignment file + environmental data    | Selection–environment association analysis   |
+| Docking   | Docking configuration file + phylogenetic tree | Molecular docking analysis                 |
+
+---
+
+## Installation
+
+### System Requirements
+
+- **Supported platforms:** Linux and macOS
+- **Python version:** 3.10 or higher
+- **Internet access:** Required for modules that use Evo2 sequence features
+- **Memory & storage:** Adequate RAM and disk space recommended for large genomic datasets
+
+### Option 1. Conda installation
+
+```bash
+conda create -n phyloselect python=3.10
+conda activate phyloselect
+conda install evanstone::phyloselect
+```
+
+### Option 2. Source installation
+
+```bash
+git clone https://github.com/evanstone/phyloselect.git
+cd phyloselect
+conda env create -f environment.yaml
+conda activate phyloselect
+pip install .
+```
+
+### Verify the installation:
+
+``````bash
+# Check program installation
+phyloselect --version
+# Check dependencies and service availability
+phyloselect check
+``````
+
+If `phyloselect check` reports that all required dependencies are available, the current environment is ready for analysis. Otherwise, please check whether the Conda environment has been correctly activated, whether all dependencies have been installed, and whether internet access is available for modules that require remote services.
+
+---
+
+## Quick Start
+
+### Example 1: SiteView analysis
+
+**Example Data:**
+
+- CDS sequence of a single gene: `phyloselect/quickstart/sequences/gene1.fasta`
+
+- Corresponding phylogenetic tree file: `phyloselect/quickstart/trees/test1.nwk`
+
+**Run Command:**
+
+```text
+cd phyloselect
+phyloselect siteview \
+-s phyloselect/quickstart/sequences/gene1.fasta \
+-t phyloselect/quickstart/trees/test1.nwk \
+-o outputdir 
+```
+
+**Main Outputs:**
+
+- `gene2EvolutionarySites.png` : Provides a quick overview of the gene’s evolutionary pattern across species, including phylogenetic relationships, site conservation, and variation trends.
+-  `SiteTestSummary.csv` : Summarizes analysis results across different site models, useful for identifying potential positively selected sites.
+
+### Example 2: Selection analysis
+
+**Example Data:**
+
+- Directory of CDS sequences for multiple genes : `phyloselect/quickstart/sequences`
+
+> **Note:** We do not provide the phylogenetic trees in this example. If you have your own phylogenetic trees, prepare a configuration file mapping sequences to their corresponding tree files(refer to the [user manual](manual.md)), and specify it using the `--tree-file-map` option.
+
+**Run Command:**
+
+```bash
+phyloselect selection -i phyloselect/quickstart/sequences -o outputdir
+```
+
+**Main Outputs:**
+
+- `Evo_dNdS.png`：Shows the Evo scores and dN/dS patterns of different genes across the phylogenetic tree.
+- Individual folders for each gene containing:
+  - 
+  - - `*_omega.csv` – ω (dN/dS) estimates for different branches.
+  - `*_omega.csv` :  ω (dN/dS) estimates for different branches.
+
+### Example 3: EnvAssoc analysis
+
+**Example Data:**
+
+- CDS sequence file: `phyloselect/quickstart/sequences/gene3.fasta`
+- Environmental trait matrix: `phyloselect/quickstart/config/env_traits.csv`
+-  Corresponding phylogenetic tree file: `phyloselect/quickstart/trees/test1.nwk`
+
+**Run command:**
+
+```bash
+phyloselect envassoc \
+-s phyloselect/quickstart/sequences/gene3.fasta \
+-e phyloselect/quickstart/config/env_traits.csv \
+-t phyloselect/quickstart/trees/test1.nwk \
+-o outputdir
+```
+
+**Main Outputs:**
+
+- `Table1_aBSREL_significant_branches.csv` : significant branches identified by aBSREL as showing evidence of episodic positive selection.
+- `Table2_PGLS_environment_association.csv` : association results between branch-level selection signals and environmental variables based on PGLS analysis.
+
+### Example 4: Docking analysis
+
+**Example Data:**
+
+- Docking configuration file: `phyloselect/quickstart/config/docking_config.csv`
+- Phylogenetic tree file for result visualization: `phyloselect/quickstart/trees/test2.nwk`
+
+> **Note:** The docking configuration file should include the target genes, paths to their modeled protein structures, substrates, products, key cofactors, and reference proteins for active-pocket definition. Please refer to the [user manual](manual.md) for the required file format.
+
+**Run command:**
+
+```bash
+phyloselect docking \
+-c phyloselect/quickstart/config/docking_config.csv \
+-t phyloselect/quickstart/trees/test2.nwk \
+-o outputdir
+```
+
+**Main Outputs：**
+
+- `TotalBindingEnergy.png` : visualization of binding energy patterns across the tested receptors or lineages.
+- `DockingResults.csv` : detailed docking results, including receptor–ligand combinations and binding energy values.
+- Additional visualization files, such as `SubstrateProductPreference.png` and `CofactorBindingEnergy.png`, are also generated.
+
+---
+
+## Full Demo Data
+
+The `quickstart/` directory is intended for installation testing and small-scale demonstration.
+
+Complete demo datasets are provided in the `DEMO/` directory. For detailed instructions on how to run each demo, interpret the outputs, and understand the analysis results, please refer to the [PhyloSelect User Manual](manual.md).
 
 ---
 
 ## Citation
 
-If you use **Gene2Struct** in your research, please cite this repository in your publications.
+If you use PhyloSelect in your research, please cite this repository. Citation information will be updated after the related manuscript is published.
+
+## License
+
+PhyloSelect is released under the MIT License. See [LICENSE](LICENSE) for details.
