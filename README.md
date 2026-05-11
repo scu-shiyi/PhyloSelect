@@ -116,8 +116,7 @@ phyloselect selection -i phyloselect/quickstart/sequences -o outputdir
 
 - `Evo_dNdS.png`：Shows the Evo scores and dN/dS patterns of different genes across the phylogenetic tree.
 - Individual folders for each gene containing:
-  - 
-  - - `*_omega.csv` – ω (dN/dS) estimates for different branches.
+  - `*_omega.csv` – ω (dN/dS) estimates for different branches.
   - `*_omega.csv` :  ω (dN/dS) estimates for different branches.
 
 ### Example 3: EnvAssoc analysis
@@ -171,9 +170,7 @@ phyloselect docking \
 
 ## Full Demo Data
 
-The `quickstart/` directory is intended for installation testing and small-scale demonstration.
-
-Complete demo datasets are provided in the `DEMO/` directory. For detailed instructions on how to run each demo, interpret the outputs, and understand the analysis results, please refer to the [PhyloSelect User Manual](manual.md).
+The `quickstart/` directory is intended for installation testing and small-scale demonstration.Complete demo datasets are provided in the `DEMO/` directory. For detailed instructions on how to run each demo, interpret the outputs, and understand the analysis results, please refer to the [PhyloSelect User Manual](manual.md).
 
 ---
 
