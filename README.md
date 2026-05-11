@@ -45,7 +45,7 @@ The table below provides a brief overview of the input file types required for e
 ### Option 1. Conda installation
 
 ```bash
-conda create -n phyloselect python=3.10
+conda create -n phyloselect
 conda activate phyloselect
 conda install evanstone::phyloselect
 ```
