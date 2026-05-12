@@ -1,3 +1,3 @@
 Gene,ReceptorDir,Substrate,Product,Cofactor,Reference
-gene1,receptors/gene1,Tyrosol,Salidroside,UDP-Glucose,8ITA
-gene2,receptors/gene2,Tyrosol,Salidroside,UDP-Glucose,8ITA
+gene1,../receptors/gene1,Tyrosol,Salidroside,UDP-Glucose,8ITA
+gene2,../receptors/gene2,Tyrosol,Salidroside,UDP-Glucose,8ITA
