@@ -53,8 +53,8 @@ conda install evanstone::phyloselect
 ### Option 2. Source installation
 
 ```bash
-git clone https://github.com/evanstone/phyloselect.git
-cd phyloselect
+git clone https://github.com/evanstone/PhyloSelect.git
+cd PhyloSelect
 conda env create -f environment.yaml
 conda activate phyloselect
 pip install .
@@ -81,13 +81,13 @@ If PhyloSelect was installed via Conda, clone the GitHub repository to obtain th
 
 ```
 git clone https://github.com/scu-shiyi/PhyloSelect.git
-cd phyloselect
+cd PhyloSelect
 ```
 
 If you have installed PhyloSelect from source:
 
 ```
-cd phyloselect
+cd PhyloSelect
 ```
 
 ### Example 1: SiteView analysis
