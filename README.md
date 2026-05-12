@@ -104,7 +104,7 @@ cd PhyloSelect
 phyloselect siteview \
 -s quickstart/sequences/gene2.fasta \
 -t quickstart/trees/test1.nwk \
--o outputdir 
+-o outputdir1 
 ```
 
 **Main Outputs:**
@@ -123,7 +123,7 @@ phyloselect siteview \
 **Run Command:**
 
 ```bash
-phyloselect selection -i quickstart/sequences -o outputdir
+phyloselect selection -i quickstart/sequences -o outputdir2
 ```
 
 **Main Outputs:**
@@ -148,7 +148,7 @@ phyloselect envassoc \
 -s quickstart/sequences/gene2.fasta \
 -e quickstart/config/env_traits.csv \
 -t quickstart/trees/test1.nwk \
--o outputdir
+-o outputdir3
 ```
 
 **Main Outputs:**
@@ -171,7 +171,7 @@ phyloselect envassoc \
 phyloselect docking \
 -c quickstart/config/docking_config.csv \
 -t quickstart/trees/test2.nwk \
--o outputdir
+-o outputdir4
 ```
 
 **Main Outputs：**
