@@ -75,41 +75,55 @@ If `phyloselect check` reports that all required dependencies are available, the
 
 ## Quick Start
 
+Before running the quickstart examples, please prepare the example data in your working directory.
+
+- If PhyloSelect was installed via Conda, copy the built-in `quickstart/` dataset to the current directory:
+
+```
+cp -r $(python -c "import phyloselect, pathlib; print(pathlib.Path(phyloselect.__file__).parent / 'quickstart')") .
+```
+
+- If PhyloSelect was installed from the GitHub repository, enter the repository directory directly:
+
+```
+cd phyloselect
+```
+
 ### Example 1: SiteView analysis
 
 **Example Data:**
 
-- CDS sequence of a single gene: `phyloselect/quickstart/sequences/gene1.fasta`
+- CDS sequence of a single gene: `quickstart/sequences/gene1.fasta`
 
-- Corresponding phylogenetic tree file: `phyloselect/quickstart/trees/test1.nwk`
+- Corresponding phylogenetic tree file: `quickstart/trees/test1.nwk`
 
 **Run Command:**
 
 ```text
 cd phyloselect
 phyloselect siteview \
--s phyloselect/quickstart/sequences/gene1.fasta \
--t phyloselect/quickstart/trees/test1.nwk \
+-s quickstart/sequences/gene1.fasta \
+-t quickstart/trees/test1.nwk \
 -o outputdir 
 ```
 
 **Main Outputs:**
 
 - `gene2EvolutionarySites.png` : Provides a quick overview of the gene’s evolutionary pattern across species, including phylogenetic relationships, site conservation, and variation trends.
--  `SiteTestSummary.csv` : Summarizes analysis results across different site models, useful for identifying potential positively selected sites.
+- `SiteTestSummary.csv` : Summarizes analysis results across different site models, useful for identifying potential positively selected sites.
 
 ### Example 2: Selection analysis
 
 **Example Data:**
 
-- Directory of CDS sequences for multiple genes : `phyloselect/quickstart/sequences`
+- Directory of CDS sequences for multiple genes : `quickstart/sequences`
 
 > **Note:** We do not provide the phylogenetic trees in this example. If you have your own phylogenetic trees, prepare a configuration file mapping sequences to their corresponding tree files(refer to the [user manual](manual.md)), and specify it using the `--tree-file-map` option.
 
 **Run Command:**
 
 ```bash
-phyloselect selection -i phyloselect/quickstart/sequences -o outputdir
+phyloselect selection -i quickstart/sequences -o outputdir
 ```
 
 **Main Outputs:**
@@ -123,17 +137,17 @@ phyloselect selection -i phyloselect/quickstart/sequences -o outputdir
 
 **Example Data:**
 
-- CDS sequence file: `phyloselect/quickstart/sequences/gene3.fasta`
-- Environmental trait matrix: `phyloselect/quickstart/config/env_traits.csv`
--  Corresponding phylogenetic tree file: `phyloselect/quickstart/trees/test1.nwk`
+- CDS sequence file: `quickstart/sequences/gene3.fasta`
+- Environmental trait matrix: `quickstart/config/env_traits.csv`
+- Corresponding phylogenetic tree file: `quickstart/trees/test1.nwk`
 
 **Run command:**
 
 ```bash
 phyloselect envassoc \
--s phyloselect/quickstart/sequences/gene3.fasta \
--e phyloselect/quickstart/config/env_traits.csv \
--t phyloselect/quickstart/trees/test1.nwk \
+-s quickstart/sequences/gene3.fasta \
+-e quickstart/config/env_traits.csv \
+-t quickstart/trees/test1.nwk \
 -o outputdir
 ```
 
@@ -146,8 +160,8 @@ phyloselect envassoc \
 
 **Example Data:**
 
-- Docking configuration file: `phyloselect/quickstart/config/docking_config.csv`
-- Phylogenetic tree file for result visualization: `phyloselect/quickstart/trees/test2.nwk`
+- Docking configuration file: `quickstart/config/docking_config.csv`
+- Phylogenetic tree file for result visualization: `quickstart/trees/test2.nwk`
 
 > **Note:** The docking configuration file should include the target genes, paths to their modeled protein structures, substrates, products, key cofactors, and reference proteins for active-pocket definition. Please refer to the [user manual](manual.md) for the required file format.
 
@@ -155,8 +169,8 @@ phyloselect envassoc \
 
 ```bash
 phyloselect docking \
--c phyloselect/quickstart/config/docking_config.csv \
--t phyloselect/quickstart/trees/test2.nwk \
+-c quickstart/config/docking_config.csv \
+-t quickstart/trees/test2.nwk \
 -o outputdir
 ```
 
@@ -165,7 +179,6 @@ phyloselect docking \
 - `TotalBindingEnergy.png` : visualization of binding energy patterns across the tested receptors or lineages.
 - `DockingResults.csv` : detailed docking results, including receptor–ligand combinations and binding energy values.
 - Additional visualization files, such as `SubstrateProductPreference.png` and `CofactorBindingEnergy.png`, are also generated.
-
 ---
 
 ## Full Demo Data
