@@ -100,10 +100,9 @@ cd PhyloSelect
 
 **Run Command:**
 
-```text
-cd phyloselect
+```bash
 phyloselect siteview \
--s quickstart/sequences/gene1.fasta \
+-s quickstart/sequences/gene2.fasta \
 -t quickstart/trees/test1.nwk \
 -o outputdir 
 ```
@@ -146,7 +145,7 @@ phyloselect selection -i quickstart/sequences -o outputdir
 
 ```bash
 phyloselect envassoc \
--s quickstart/sequences/gene3.fasta \
+-s quickstart/sequences/gene2.fasta \
 -e quickstart/config/env_traits.csv \
 -t quickstart/trees/test1.nwk \
 -o outputdir
