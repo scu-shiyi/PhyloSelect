@@ -75,15 +75,16 @@ If `phyloselect check` reports that all required dependencies are available, the
 
 ## Quick Start
 
-Before running the quickstart examples, please prepare the example data in your working directory.
+Before running the quickstart examples, please prepare the [example data](quickstart) in your working directory.
 
-- If PhyloSelect was installed via Conda, copy the built-in `quickstart/` dataset to the current directory:
+If PhyloSelect was installed via Conda, clone the GitHub repository to obtain the `quickstart/` example data:
 
 ```
-cp -r $(python -c "import phyloselect, pathlib; print(pathlib.Path(phyloselect.__file__).parent / 'quickstart')") .
+git clone https://github.com/scu-shiyi/PhyloSelect.git
+cd phyloselect
 ```
 
-- If PhyloSelect was installed from the GitHub repository, enter the repository directory directly:
+If you have installed PhyloSelect from source:
 
 ```
 cd phyloselect
