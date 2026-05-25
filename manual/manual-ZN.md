@@ -698,9 +698,9 @@ phyloselect selection -i home/user/DEMO/DEMO1/DATA/FASTA  -o /home/user/demo/DEM
 ```
 会得到以下结果：
 
-`Evo_dNdS.png`：Selection 模块生成的基因层进化分析结果，展示候选基因的 Evo2 序列上下文评分以及 codeml M0 模型估计的 ω 值。
+`Evo_dNdS.png`：Selection 模块生成的基因层进化分析结果，展示候选基因的 Evo2 序列上下文评分以及 codeml! M0 模型估计的 ω 值。
 
-[`Selection output`](../images/Evo_dNdS.png)
+![`Selection output`](../images/Evo_dNdS.png)
 
 图中的星号表示 free-ratio 模型与 M0 模型比较的似然比检验达到显著水平，提示该基因在不同分支间存在选择压力异质性（`*`，P < 0.05；`**`，P < 0.01）。
 
@@ -731,7 +731,7 @@ phyloselect siteview -s /home/user/DEMO/DEMO2/DATA/UGT2.fasta -t home/user/DEMO/
 
 - `UGT2EvolutionarySites.png`：展示 UGT2 在系统发育背景下的位点变异模式、Evo2 位点评分分布以及候选正选择位点位置。
 
-  [`SiteView output`](../images/UGT2EvolutionarySites.png)
+  ![`SiteView output`](../images/UGT2EvolutionarySites.png)
 
   图中下方轨道表示 M8 模型下各密码子位点受到正选择的后验概率，红色标记表示通过 Bayes Empirical Bayes（BEB）分析识别出的候选正选择位点，其中 `*` 表示后验概率 > 0.95，`**` 表示后验概率 > 0.99。
 
@@ -818,7 +818,7 @@ phyloselect docking -c /home/user/DEMO/DEMO4/DATA/docking_config.csv -t /home/us
 
 1. ``LigandBindingProfile.png``：展示候选蛋白与指定底物、产物之间的整体对接评分模式。该图可用于比较不同基因或不同物种在配体结合相关结构特征上的相对差异。
 
-​	[`docking output`](../images/LigandBindingProfile.png)
+​	![`docking output`](../images/LigandBindingProfile.png)
 
 2. `docking_summary.csv`：汇总各候选蛋白与底物、产物及辅助因子的对接评分结果，可用于查看具体数值并进行后续比较分析。
 
