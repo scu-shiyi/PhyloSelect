@@ -3,7 +3,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="phyloselect",
-    version="1.1.0",
+    version="1.1.1",
     description="PhyloSelect: A comprehensive toolkit for phylogenetic analysis and evolutionary selection.",
     author="scu-shiyi",
     author_email="shi@stu.scu.edu.cn",
