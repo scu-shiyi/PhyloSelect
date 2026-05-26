@@ -1,35 +1,40 @@
 # PhyloSelect
 
-An Integrated Toolkit for Functional Gene Mining, Evolutionary Analysis, and Structural Characterization.
+An Integrative Framework for Multi-Dimensional Phylogenetic and Functional Gene Analysis
 
 ## Introduction
 
-PhyloSelect is a command-line bioinformatics toolkit for functional gene studies in non-model organisms. Its main functionalities include:
+PhyloSelect is an integrated command-line software package for phylogenetic analysis and molecular evolutionary research. Within a unified workflow, it integrates target CDS recovery, gene-level and site-level selection analysis, environmental association analysis, and structure-level comparison. It is designed to provide a consistent, reusable, and extensible workflow for multi-level evolutionary analysis of protein-coding genes.
 
-- Extracting target CDS sequences from genomic or transcriptomic data.  
-- Performing site-level and branch-level evolutionary analyses to detect positive selection and sequence heterogeneity.  
-- Conducting selection–environment association analyses.  
-- Running molecular docking to evaluate structural-functional effects of sequence variants.  
+In addition to classical molecular evolutionary methods, PhyloSelect supports sequence-context features extracted by the large-scale genomic foundation model Evo2, including sequence scores and site entropy metrics. These features can be combined with traditional codon-model results from tools such as codeml to assist in identifying candidate genes, candidate sites, and localized evolutionary heterogeneity.
 
-Users can complete a full workflow from sequence extraction to evolutionary and structural-functional interpretation using PhyloSelect.
+PhyloSelect consists of five functional modules, covering the main steps from target protein-coding sequence acquisition to selection signal detection, environmental association analysis, and structure-level comparison. These modules can be used together as a recommended workflow or run independently according to specific research aims.
+
+| **Module**    | **Description**                                              |
+| ------------- | ------------------------------------------------------------ |
+| **GeneMiner** | Recovers target genes from raw sequencing data, including shallow sequencing data. |
+| **SiteView**  | Performs site-level evolutionary analysis for a single protein-coding gene by combining Evo2 entropy scores and codeml site models to identify local variation patterns and candidate positively selected sites. |
+| **Selection** | Performs gene-level selection analysis for multiple protein-coding genes and compares the M0 and free-ratio models to evaluate branch-level heterogeneity in selective pressure. |
+| **EnvAssoc**  | Tests statistical associations between branch-level selection signals and environmental variables using aBSREL and PGLS. |
+| **Docking**   | Compares relative docking score patterns between candidate proteins and substrates or products based on predicted protein structures and molecular docking results, providing structure-level evidence for evaluating potential differences. |
 
 ![PhyloSelect workflow](pipeline.png)
 
-For the **complete user manual**, please refer to [user manual](./manual/manual-EN.md)
+For the **complete user manual**, please refer to [User Manuall](./manual/manual-EN.md).
 
 ---
 
 ## Module Overview
 
-The table below provides a brief overview of the input file types required for each module. For detailed file formats, parameter descriptions, and complete usage instructions, please refer to the [PhyloSelect User Manual](manual.md).
+The table below provides a brief overview of the input file types required for each module. For detailed file formats, parameter descriptions, and complete usage instructions, please refer to the [User Manuall](./manual/manual-EN.md).
 
-| Module    | Input Type                                   | Description                                  |
-| --------- | -------------------------------------------- | -------------------------------------------- |
-| GeneMiner | Reads or contigs                             | Raw sequencing data or assembled sequences   |
-| SiteView  | Single CDS file, optional phylogenetic tree  | Site-level evolutionary analysis for a gene  |
-| Selection | Multiple CDS files, optional tree mapping    | Multi-gene or batch selection analysis       |
-| EnvAssoc  | Codon alignment file + environmental data    | Selection–environment association analysis   |
-| Docking   | Docking configuration file + phylogenetic tree | Molecular docking analysis                 |
+| **Module**    | **Main input data**                                          | **Common file formats** |
+| ------------- | ------------------------------------------------------------ | ----------------------- |
+| **GeneMiner** | Sequencing data; target gene references; sample list         | FASTQ, FASTA, TSV       |
+| **Selection** | Multiple protein-coding sequences; TreeMap; phylogenetic trees | FASTA, CSV, Newick      |
+| **SiteView**  | Single protein-coding sequence; phylogenetic tree            | FASTA, Newick           |
+| **EnvAssoc**  | Codon alignment; phylogenetic tree; environmental table      | FASTA, Newick, CSV      |
+| **Docking**   | Protein structures; docking configuration; phylogenetic tree | PDB/CIF, CSV, Newick    |
 
 ---
 
@@ -37,10 +42,12 @@ The table below provides a brief overview of the input file types required for e
 
 ### System Requirements
 
-- **Supported platforms:** Linux and macOS
-- **Python version:** 3.10 or higher
-- **Internet access:** Required for modules that use Evo2 sequence features
-- **Memory & storage:** Adequate RAM and disk space recommended for large genomic datasets
+PhyloSelect currently supports Linux and macOS systems. The following environment is recommended:
+
+- Operating system: Linux or macOS
+- Python: ≥ 3.10
+- Memory: ≥ 8 GB recommended
+- Disk space: 3–5 GB of available space recommended for the software, bundled components, and runtime cache, excluding user-generated analysis data
 
 ### Option 1. Conda installation
 
@@ -60,7 +67,7 @@ conda activate phyloselect
 pip install .
 ```
 
-### Verify the installation:
+### Installation verification:
 
 ``````bash
 # Check program installation
