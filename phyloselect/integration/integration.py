@@ -314,35 +314,48 @@ def run_pgls_reporting(
     table_s1_export.to_csv(f_s1, index=False, encoding="utf-8")
 
     # =========================================================
-    # Table 1: significant aBSREL branches
+    # Table 1: aBSREL branch summary for main text
     # =========================================================
-    table_1 = df[[taxon_col, "lrt", "p_value_raw", "q_value_fdr", "selected_branch"]].copy()
+    table_1_cols = [
+        taxon_col,
+        omega_col,
+        "lrt",
+        "p_value_raw",
+        "q_value_fdr",
+        keep_col,
+    ]
+    table_1_cols = [c for c in table_1_cols if c in df.columns]
+    table_1 = df[table_1_cols].copy()
 
-    if table_1["q_value_fdr"].notna().any():
-        table_1["selected_branch"] = table_1["q_value_fdr"] <= 0.05
-    else:
-        table_1["selected_branch"] = table_1["p_value_raw"].notna() & (table_1["p_value_raw"] <= 0.05)
+    table_1["Selection status"] = table_1[keep_col].map(
+        lambda x: "Retained" if bool(x) else "Excluded"
+    )
 
     table_1 = table_1.sort_values(
-        by=["selected_branch", "q_value_fdr", "p_value_raw", taxon_col],
-        ascending=[False, True, True, True],
+        by=[keep_col, "q_value_fdr", "p_value_raw", taxon_col],
+        ascending=[True, True, True, True],
         na_position="last",
     ).reset_index(drop=True)
 
     table_1_export = table_1.rename(columns={
         "taxon": "Taxon",
+        omega_col: "ω_weighted",
         "lrt": "LRT",
         "p_value_raw": "P-value",
         "q_value_fdr": "Q-value",
-        "selected_branch": "Significant",
     })
 
+    table_1_export = table_1_export[
+        ["Taxon", "ω_weighted", "LRT", "P-value", "Q-value", "Selection status"]
+    ]
+
+    table_1_export["ω_weighted"] = table_1_export["ω_weighted"].map(_fmt_effect)
     table_1_export["LRT"] = table_1_export["LRT"].map(_fmt_lrt)
     table_1_export["P-value"] = table_1_export["P-value"].map(_fmt_pq)
     table_1_export["Q-value"] = table_1_export["Q-value"].map(_fmt_pq)
 
-    f_t1 = output_dir / "Table1_aBSREL_significant_branches.csv"
-    table_1_export.to_csv(f_t1, index=False)
+    f_t1 = output_dir / "Table1_aBSREL_branch_summary.csv"
+    table_1_export.to_csv(f_t1, index=False, encoding="utf-8")
 
     # =========================================================
     # Internal merged table for PGLS (not exported)
@@ -354,9 +367,6 @@ def run_pgls_reporting(
 
     env_cols = [c for c in env.columns if c != taxon_col]
 
-    print("df taxa:", sorted(df[taxon_col].astype(str).unique())[:30])
-    print("env taxa:", sorted(env[taxon_col].astype(str).unique())[:30])
-    print("intersection:", set(df[taxon_col].astype(str)) & set(env[taxon_col].astype(str)))
 
     t2 = df[[taxon_col, omega_col, keep_col]].copy()
     t2 = t2.merge(env[[taxon_col] + env_cols], on=taxon_col, how="inner")
@@ -434,8 +444,11 @@ def run_pgls_reporting(
         "t_value": "t",
         "p_value_raw": "P-value",
         "q_value_fdr": "Q-value",
+        "significant_fdr": "Significant after FDR",
     })
-
+    pgls_export = pgls_export[
+        ["Environmental factor", "N", "β", "SE", "t", "P-value", "Q-value", "Significant after FDR"]
+    ]
     pgls_export["β"] = pgls_export["β"].map(_fmt_effect)
     pgls_export["SE"] = pgls_export["SE"].map(_fmt_effect)
     pgls_export["t"] = pgls_export["t"].map(_fmt_t)

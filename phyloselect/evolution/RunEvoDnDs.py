@@ -178,10 +178,7 @@ def plot_evo_vs_m0_bars(
     ax.set_xticks(centers)
     ax.set_xticklabels(genes, rotation=60, fontsize=11, ha="center")
     ax.set_ylabel("Score / ω (M0)", fontsize=11, labelpad=12)
-    if title:
-        ax.set_title(title,
-                     fontsize=15,
-                     pad=14)
+
     ax.axhline(y=1, color="#7b4f96", linestyle="--", linewidth=1.2)
     ax.legend(frameon=False, loc="upper left", bbox_to_anchor=(1.02, 1), fontsize=11, borderaxespad=0)
 

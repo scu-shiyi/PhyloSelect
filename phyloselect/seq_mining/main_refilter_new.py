@@ -6,7 +6,23 @@ import contextlib
 import math
 import os
 import shutil
+import gzip
+def split_seq_ext(filename):
+    if filename.endswith(".fastq.gz"):
+        return filename[:-9], ".fastq.gz"
+    if filename.endswith(".fq.gz"):
+        return filename[:-6], ".fq.gz"
+    if filename.endswith(".fasta.gz"):
+        return filename[:-9], ".fasta.gz"
+    if filename.endswith(".fas.gz"):
+        return filename[:-7], ".fas.gz"
+    if filename.endswith(".fa.gz"):
+        return filename[:-6], ".fa.gz"
+    return os.path.splitext(filename)
 
+
+def open_text(path):
+    return gzip.open(path, "rt") if str(path).endswith(".gz") else open(path, "r")
 FILE_EXTENSION = {
     'fasta': '.fasta',
     'fastq': '.fq'
@@ -17,7 +33,8 @@ FILE_TYPES = {
     '.fas': 'fasta',
     '.fasta': 'fasta',
     '.fq': 'fastq',
-    '.fastq': 'fastq'
+    '.fastq': 'fastq',
+    '.fq.gz': 'fastq',
 }
 
 FORMAT_FUNCTIONS = {
@@ -42,8 +59,7 @@ def print_log(log_path, *args, **kwargs):
 
 def get_read_dict(se_dir, pe_dir):
     read_dict = {}
-    walk_directory = lambda path: ((os.path.dirname(ent.path), *os.path.splitext(ent.name)) for ent in os.scandir(path) if ent.is_file())
-
+    walk_directory = lambda path: ((os.path.dirname(ent.path), *split_seq_ext(ent.name)) for ent in os.scandir(path) if ent.is_file())
     if se_dir:
         if not os.path.isdir(se_dir):
             raise ValueError('Argument --se-dir does not refer to a directory.')
@@ -62,22 +78,27 @@ def get_read_dict(se_dir, pe_dir):
             raise ValueError('Argument --pe-dir does not refer to a directory.')
 
         for dirname, basename, extname in walk_directory(pe_dir):
-            if extname not in FILE_TYPES or not basename.endswith('_1'):
+            if extname not in FILE_TYPES:
                 continue
 
-            gene_name = basename[:-2]
+            if basename.endswith('_1'):
+                gene_name = basename[:-2]
+                forward_path = os.path.join(dirname, f'{gene_name}_1{extname}')
+                reverse_path = os.path.join(dirname, f'{gene_name}_2{extname}')
+            elif basename.endswith('.1'):
+                gene_name = basename[:-2]
+                forward_path = os.path.join(dirname, f'{gene_name}.1{extname}')
+                reverse_path = os.path.join(dirname, f'{gene_name}.2{extname}')
+            else:
+                continue
 
             if gene_name in read_dict:
                 raise ValueError(f'Duplicate read group name {gene_name}.')
-
-            forward_path = os.path.join(dirname, f'{gene_name}_1{extname}')
-            reverse_path = os.path.join(dirname, f'{gene_name}_2{extname}')
 
             if os.path.isfile(reverse_path):
                 read_dict[gene_name] = (forward_path, reverse_path)
             else:
                 read_dict[gene_name] = (forward_path, )
-    print(read_dict)
     return read_dict
 
 def get_ref_dict(ref_dir):
@@ -192,7 +213,7 @@ def run_length_filter(name, out_dir, ref_set, ref_length, read_info, file_type, 
     kmer_dict = build_kmer_dict(ref_set, kmer_size)
 
     with contextlib.ExitStack() as stack:
-        read_iters  = [read_iter(stack.enter_context(open(path, 'r'))) for path in read_info]
+        read_iters  = [read_iter(stack.enter_context(open_text(path))) for path in read_info]
         output_file = stack.enter_context(os.fdopen(os.open(output_path, open_flags), 'w'))
 
         for linked_reads in zip(*read_iters):
@@ -314,7 +335,7 @@ def kmer_filter(name, out_dir, log_path, ref_set, ref_length, temp_path, file_ty
     format_func = FORMAT_FUNCTIONS[file_type]
     read_iter   = READ_ITERATORS[file_type]
 
-    with open(temp_path, 'r') as f:
+    with open_text(temp_path) as f:
         total_length = sum(len(tp[1]) for tp in read_iter(f))
 
     coverage  = total_length / ref_length
@@ -375,8 +396,7 @@ def kmer_filter(name, out_dir, log_path, ref_set, ref_length, temp_path, file_ty
                 fo.write(format_func(tp))
 
 def filter_gene(task):
-    file_ext = os.path.splitext(task.read_path[0])[1]
-
+    _, file_ext = split_seq_ext(task.read_path[0])
     if file_ext not in FILE_TYPES:
         print_log(task.log_path, f"File '{task.read_path[0]}' has invalid file type.")
         return

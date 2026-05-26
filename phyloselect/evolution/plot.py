@@ -289,7 +289,6 @@ def Visualization(paml_treefile,
     plt.rcParams["mathtext.fontset"] = "stix"
 
     fig = plt.figure(figsize=(20, 10), dpi=150)
-    fig.suptitle("Site-wise evolutionary conservation and positive selection", fontsize=20, y=0.98)
     gs = GridSpec(1, 3, width_ratios=[1, 5, 0.5], wspace=0)
     ax_tree = fig.add_subplot(gs[0])
     ax_heatmap = fig.add_subplot(gs[1])

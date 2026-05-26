@@ -15,7 +15,7 @@ Users can complete a full workflow from sequence extraction to evolutionary and 
 
 ![PhyloSelect workflow](pipeline.png)
 
-For the **complete user manual**, please refer to [user manual](manual.md)
+For the **complete user manual**, please refer to [user manual](./manual/manual-EN.md)
 
 ---
 
@@ -47,14 +47,14 @@ The table below provides a brief overview of the input file types required for e
 ```bash
 conda create -n phyloselect
 conda activate phyloselect
-conda install -c evanstone -c conda-forge -c bioconda phyloselect
+conda install evanstone::phyloselect
 ```
 
 ### Option 2. Source installation
 
 ```bash
-git clone https://github.com/evanstone/PhyloSelect.git
-cd PhyloSelect
+git clone https://github.com/evanstone/phyloselect.git
+cd phyloselect
 conda env create -f environment.yaml
 conda activate phyloselect
 pip install .
@@ -75,19 +75,18 @@ If `phyloselect check` reports that all required dependencies are available, the
 
 ## Quick Start
 
-Before running the quickstart examples, please prepare the [example data](quickstart) in your working directory.
+Before running the quickstart examples, please prepare the example data in your working directory.
 
-If PhyloSelect was installed via Conda, clone the GitHub repository to obtain the `quickstart/` example data:
-
-```
-git clone https://github.com/scu-shiyi/PhyloSelect.git
-cd PhyloSelect
-```
-
-If you have installed PhyloSelect from source:
+- If PhyloSelect was installed via Conda, copy the built-in `quickstart/` dataset to the current directory:
 
 ```
-cd PhyloSelect
+cp -r $(python -c "import phyloselect, pathlib; print(pathlib.Path(phyloselect.__file__).parent / 'quickstart')") .
+```
+
+- If PhyloSelect was installed from the GitHub repository, enter the repository directory directly:
+
+```
+cd phyloselect
 ```
 
 ### Example 1: SiteView analysis
@@ -100,17 +99,18 @@ cd PhyloSelect
 
 **Run Command:**
 
-```bash
+```text
+cd phyloselect
 phyloselect siteview \
--s quickstart/sequences/gene2.fasta \
+-s quickstart/sequences/gene1.fasta \
 -t quickstart/trees/test1.nwk \
--o outputdir1 
+-o outputdir 
 ```
 
 **Main Outputs:**
 
 - `gene2EvolutionarySites.png` : Provides a quick overview of the gene’s evolutionary pattern across species, including phylogenetic relationships, site conservation, and variation trends.
-- `SiteTestSummary.csv` : Summarizes analysis results across different site models, useful for identifying potential positively selected sites.
+-  `SiteTestSummary.csv` : Summarizes analysis results across different site models, useful for identifying potential positively selected sites.
 
 ### Example 2: Selection analysis
 
@@ -123,7 +123,7 @@ phyloselect siteview \
 **Run Command:**
 
 ```bash
-phyloselect selection -i quickstart/sequences -o outputdir2
+phyloselect selection -i quickstart/sequences -o outputdir
 ```
 
 **Main Outputs:**
@@ -139,16 +139,16 @@ phyloselect selection -i quickstart/sequences -o outputdir2
 
 - CDS sequence file: `quickstart/sequences/gene3.fasta`
 - Environmental trait matrix: `quickstart/config/env_traits.csv`
-- Corresponding phylogenetic tree file: `quickstart/trees/test1.nwk`
+-  Corresponding phylogenetic tree file: `quickstart/trees/test1.nwk`
 
 **Run command:**
 
 ```bash
 phyloselect envassoc \
--s quickstart/sequences/gene2.fasta \
+-s quickstart/sequences/gene3.fasta \
 -e quickstart/config/env_traits.csv \
 -t quickstart/trees/test1.nwk \
--o outputdir3
+-o outputdir
 ```
 
 **Main Outputs:**
@@ -171,7 +171,7 @@ phyloselect envassoc \
 phyloselect docking \
 -c quickstart/config/docking_config.csv \
 -t quickstart/trees/test2.nwk \
--o outputdir4
+-o outputdir
 ```
 
 **Main Outputs：**
@@ -179,6 +179,7 @@ phyloselect docking \
 - `TotalBindingEnergy.png` : visualization of binding energy patterns across the tested receptors or lineages.
 - `DockingResults.csv` : detailed docking results, including receptor–ligand combinations and binding energy values.
 - Additional visualization files, such as `SubstrateProductPreference.png` and `CofactorBindingEnergy.png`, are also generated.
+
 ---
 
 ## Full Demo Data
@@ -189,7 +190,23 @@ The `quickstart/` directory is intended for installation testing and small-scale
 
 ## Citation
 
-If you use PhyloSelect in your research, please cite this repository. Citation information will be updated after the related manuscript is published.
+If you use PhyloSelect or any of its modules, please cite the corresponding tools and methods used in your analysis:
+
+1. Yi Shi et al. PhyloSelect: An Integrated Workflow for Multi-Level Phylogenetic and Functional Gene Analysis.
+2. Yu X, Tang Z, Zhang Z, et al. GeneMiner2: Accurate and Automated Recovery of Genes From Genome Skimming Data. *Molecular Ecology Resources*. 2026;26(2):e70111. doi:10.1111/1755-0998.70111.
+3. Brixi G, Durrant MG, Ku J, et al. Genome modelling and design across all domains of life with Evo 2. *Nature*. 2026. doi:10.1038/s41586-026-10176-5.
+4. Yang Z. PAML 4: Phylogenetic Analysis by Maximum Likelihood. *Molecular Biology and Evolution*. 2007;24(8):1586–1591. doi:10.1093/molbev/msm088.
+5. Kosakovsky Pond SL, Poon AFY, Velazquez R, et al. HyPhy 2.5: A customizable platform for evolutionary hypothesis testing using phylogenies. *Molecular Biology and Evolution*. 2020;37(1):295–299. doi:10.1093/molbev/msz197.
+6. Smith MD, Wertheim JO, Weaver S, et al. Less Is More: An Adaptive Branch-Site Random Effects Model for Efficient Detection of Episodic Diversifying Selection. *Molecular Biology and Evolution*. 2015;32(5):1342–1353. doi:10.1093/molbev/msv022.
+7. Trott O, Olson AJ. AutoDock Vina: improving the speed and accuracy of docking with a new scoring function, efficient optimization, and multithreading. *Journal of Computational Chemistry*. 2010;31(2):455–461. doi:10.1002/jcc.21334.
+8. Minh BQ, Schmidt HA, Chernomor O, et al. IQ-TREE 2: New Models and Efficient Methods for Phylogenetic Inference in the Genomic Era. *Molecular Biology and Evolution*. 2020;37(5):1530–1534. doi:10.1093/molbev/msaa015.
+9. Capella-Gutiérrez S, Silla-Martínez JM, Gabaldón T. trimAl: a tool for automated alignment trimming in large-scale phylogenetic analyses. *Bioinformatics*. 2009;25(15):1972–1973. doi:10.1093/bioinformatics/btp348.
+10. Edgar RC. Muscle5: High-accuracy alignment ensembles enable unbiased assessments of sequence homology and phylogeny. *Nature Communications*. 2022;13:6968. doi:10.1038/s41467-022-34630-w.
+11. Suyama M, Torrents D, Bork P. PAL2NAL: robust conversion of protein sequence alignments into the corresponding codon alignments. *Nucleic Acids Research*. 2006;34(Web Server issue):W609–W612. doi:10.1093/nar/gkl315.
+12. O’Boyle NM, Banck M, James CA, et al. Open Babel: An open chemical toolbox. *Journal of Cheminformatics*. 2011;3:33. doi:10.1186/1758-2946-3-33.
+13. Le Guilloux V, Schmidtke P, Tuffery P. Fpocket: An open source platform for ligand pocket detection. *BMC Bioinformatics*. 2009;10:168. doi:10.1186/1471-2105-10-168.
+
+
 
 ## License
 

@@ -236,7 +236,6 @@ def plot_single_figure(tree_path, df, title, out_path, outgroups):
         cbar_kws={"pad":0.05}
     )
     hm = sns.heatmap(**heatmap_kwargs)
-    ax_heatmap.set_title(title, fontsize=20, pad=14)
     cbar = hm.collections[0].colorbar
     cbar.set_label("(kcal/mol)", fontsize=15, labelpad=12)
 
@@ -271,11 +270,11 @@ def fig(tree_path, cofactor_df, inhibition_diff_df, is_cofactor,cds_df, out_dir,
     plot_single_figure(tree_path=tree_path,
                        df=cds_df,
                        title="Cross species variation in Total Binding Energy",
-                       out_path=os.path.join(out_dir, "TotalBindingEnergy.png"),
+                       out_path=os.path.join(out_dir, "LigandBindingProfile.png"),
                         outgroups=outgroups
     )
     if is_cofactor:
-        out_path = os.path.join(out_dir, "CofactorBindingEnergy.png")
+        out_path = os.path.join(out_dir, "CofactorBindingProfile.png")
 
         plot_single_figure(tree_path=tree_path,
                            df=cofactor_df,

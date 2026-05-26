@@ -179,7 +179,51 @@ def main():
     elif args.command == "geneminer":
         os.makedirs(args.output_dir, exist_ok=True)
         from phyloselect.seq_mining.core import run as run_geneminer
-        run_geneminer(args)
+
+        geneminer_argv = [
+            "-f", args.f,
+            "-r", args.r,
+            "-o", args.output_dir,
+            "-p", str(args.p),
+            "-kf", str(args.kf),
+            "-ka", str(args.ka),
+            "-s", str(args.step_size),
+            "-e", str(args.error_threshold),
+            "-sb", str(args.soft_boundary),
+            "-i", str(args.iteration),
+            "-c", str(args.consensus_threshold),
+            "-tm", args.trim_mode,
+            "-tr", str(args.trim_retention),
+            "-cd", str(args.clean_difference),
+            "-cn", str(args.clean_sequences),
+            "-m", args.tree_method,
+            "-b", str(args.bootstrap),
+            "--max-reads", str(args.max_reads),
+            "--min-depth", str(args.min_depth),
+            "--max-depth", str(args.max_depth),
+            "--max-size", str(args.max_size),
+            "--min-ka", str(args.min_ka),
+            "--max-ka", str(args.max_ka),
+            "--msa-program", args.msa_program,
+            "--phylo-program", args.phylo_program,
+        ]
+
+        if args.trim_source is not None:
+            geneminer_argv += ["-ts", args.trim_source]
+
+        if args.combine_source is not None:
+            geneminer_argv += ["-cs", args.combine_source]
+
+        if args.no_alignment:
+            geneminer_argv.append("--no-alignment")
+
+        if args.no_trimal:
+            geneminer_argv.append("--no-trimal")
+
+        if args.actions:
+            geneminer_argv += args.actions
+
+        run_geneminer(geneminer_argv)
     elif args.command == "check":
         import shutil
         import sys

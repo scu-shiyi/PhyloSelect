@@ -325,27 +325,105 @@ class ABSRELRunner:
             *,
             tips_only: bool = True,
             ds_eps: float = 1e-6,
-            omega_cap: float = 1e8,
+            dn_eps: float = 1e-6,
+            omega_floor: float = 1e-6,
+            omega_weighted_cap: float = 100,
+            omega_max_cap: float = 1000,
+            baseline_omega_cap: float = 100,
+            omega_dn_ds_cap: float = 100,
+            unstable_ds: float = 1e-4,
+            unstable_omega: float = 10,
+            dn_ds_ratio_cap: float = 10,
     ) -> pd.DataFrame:
         results = self.parse_branch_results(absrel_json, tips_only=tips_only)
         rows = []
+
         for r in results:
             dn = r.dn
             ds = r.ds
 
-            # 用 ds_eps 做分母门槛，避免 ds 很小导致 omega_dn_ds 爆炸
             omega_dn_ds = None
-            if dn is not None and ds is not None and ds >= ds_eps:
+            if dn is not None and ds is not None and math.isfinite(dn) and math.isfinite(ds) and ds >= ds_eps:
                 omega_dn_ds = dn / ds
 
-            # flags
-            flag_ds_small = (ds is None) or (ds < ds_eps)
+            flag_ds_small = (ds is None) or (not math.isfinite(ds)) or (ds < ds_eps)
+            flag_dn_small = (dn is None) or (not math.isfinite(dn)) or (dn < dn_eps)
 
-            # 注意：这里比较用原值（float）更稳，输出再 norm
-            cand = [r.omega_weighted, r.omega_max, r.baseline_omega, omega_dn_ds]
-            flag_omega_cap = any((x is not None and math.isfinite(x) and x >= omega_cap) for x in cand)
+            flag_low_signal = flag_dn_small and flag_ds_small
 
-            keep = (not flag_ds_small) and (not flag_omega_cap)
+            flag_extreme_omega_weighted = (
+                    r.omega_weighted is not None
+                    and math.isfinite(r.omega_weighted)
+                    and r.omega_weighted >= omega_weighted_cap
+            )
+
+            flag_extreme_omega_max = (
+                    r.omega_max is not None
+                    and math.isfinite(r.omega_max)
+                    and r.omega_max >= omega_max_cap
+            )
+
+            flag_extreme_baseline_omega = (
+                    r.baseline_omega is not None
+                    and math.isfinite(r.baseline_omega)
+                    and r.baseline_omega >= baseline_omega_cap
+            )
+
+            flag_extreme_omega_dn_ds = (
+                    omega_dn_ds is not None
+                    and math.isfinite(omega_dn_ds)
+                    and omega_dn_ds >= omega_dn_ds_cap
+            )
+
+            flag_dn_ds_ratio_high = (
+                    omega_dn_ds is not None
+                    and math.isfinite(omega_dn_ds)
+                    and omega_dn_ds > dn_ds_ratio_cap
+            )
+
+            flag_omega_cap = (
+                    flag_extreme_omega_weighted
+                    or flag_extreme_omega_max
+                    or flag_extreme_baseline_omega
+                    or flag_extreme_omega_dn_ds
+            )
+
+            flag_unstable_omega = (
+                    ds is not None
+                    and math.isfinite(ds)
+                    and ds < unstable_ds
+                    and (
+                            (r.omega_weighted is not None and math.isfinite(
+                                r.omega_weighted) and r.omega_weighted > unstable_omega)
+                            or (omega_dn_ds is not None and math.isfinite(omega_dn_ds) and omega_dn_ds > unstable_omega)
+                    )
+            )
+
+            keep = (
+                    not flag_ds_small
+                    and not flag_low_signal
+                    and not flag_omega_cap
+                    and not flag_unstable_omega
+                    and not flag_dn_ds_ratio_high
+            )
+
+            exclusion_reasons = []
+            if flag_ds_small:
+                exclusion_reasons.append("small ds")
+            if flag_low_signal:
+                exclusion_reasons.append("low substitution signal")
+            if flag_extreme_omega_weighted:
+                exclusion_reasons.append("extreme omega_weighted")
+            if flag_extreme_omega_max:
+                exclusion_reasons.append("extreme omega_max")
+            if flag_extreme_baseline_omega:
+                exclusion_reasons.append("extreme baseline_omega")
+            if flag_extreme_omega_dn_ds:
+                exclusion_reasons.append("extreme omega_dn_ds")
+            if flag_unstable_omega:
+                exclusion_reasons.append("small ds; unstable omega")
+            if flag_dn_ds_ratio_high:
+                exclusion_reasons.append("dn/ds ratio > 10")
 
             rows.append({
                 "taxon": r.original_name or r.branch,
@@ -366,13 +444,24 @@ class ABSRELRunner:
                 "significant": (r.q_value is not None and r.q_value <= 0.05),
 
                 "flag_ds_small": flag_ds_small,
+                "flag_dn_small": flag_dn_small,
+                "flag_low_signal": flag_low_signal,
                 "flag_omega_cap": flag_omega_cap,
+                "flag_extreme_omega_weighted": flag_extreme_omega_weighted,
+                "flag_extreme_omega_max": flag_extreme_omega_max,
+                "flag_extreme_baseline_omega": flag_extreme_baseline_omega,
+                "flag_extreme_omega_dn_ds": flag_extreme_omega_dn_ds,
+                "flag_unstable_omega": flag_unstable_omega,
+                "flag_dn_ds_ratio_high": flag_dn_ds_ratio_high,
+
                 "keep": keep,
+                "exclusion_reason": "; ".join(exclusion_reasons),
 
                 "notes": r.notes,
             })
 
         df = pd.DataFrame(rows)
+
         if not df.empty:
             df = df.sort_values("taxon").reset_index(drop=True)
 
@@ -381,9 +470,11 @@ class ABSRELRunner:
             "dn", "ds", "omega_dn_ds",
             "lrt", "p_value", "q_value",
         ]
+
         for c in numeric_cols:
             if c in df.columns:
                 df[c] = pd.to_numeric(df[c], errors="coerce")
+
         return df
 
     def _extract_branch_metrics(self, payload: Any) -> Tuple[
