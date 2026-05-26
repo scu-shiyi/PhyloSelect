@@ -89,3 +89,5 @@ htmlcov/
 
 # Local PyPI configuration
 .pypirc
+# Conda recipe
+recipe/
