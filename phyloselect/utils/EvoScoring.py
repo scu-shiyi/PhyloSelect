@@ -7,8 +7,8 @@ from pathlib import Path
 from phyloselect.utils.TreeLoad import _sanitize_id_strict
 
 
-API_SCORE_URL   = "http://life-bioinfo.cn:3423/score_only"
-API_ENTROPY_URL = "http://life-bioinfo.cn:3423/entropy_only"
+API_SCORE_URL   = "http://life-bioinfo.cn:14411/score_only"
+API_ENTROPY_URL = "http://life-bioinfo.cn:14411/entropy_only"
 
 def collect_fasta_files(fasta_input):
 
